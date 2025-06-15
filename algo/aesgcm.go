@@ -5,7 +5,10 @@ import (
 	"crypto/cipher"
 	"crypto/rand"
 	"errors"
+	"fmt"
 	"io"
+	"smartcrypt/smartcrypt"
+	//"github.com/kshitij22999/smartcrypt/smartcrypt"
 )
 
 // AESGCMEncryptor implements the Encryptor interface using AES-GCM.
@@ -25,6 +28,7 @@ func NewAESGCMEncryptor(key []byte) (*AESGCMEncryptor, error) {
 // Encrypt encrypts plaintext using AES-GCM.
 func (e *AESGCMEncryptor) Encrypt(plaintext []byte) ([]byte, error) {
 	block, err := aes.NewCipher(e.key)
+	fmt.Println("encry working", block, err)
 	if err != nil {
 		return nil, err
 	}
@@ -62,6 +66,20 @@ func (e *AESGCMEncryptor) Decrypt(ciphertext []byte) ([]byte, error) {
 
 	nonce, ciphertext := ciphertext[:nonceSize], ciphertext[nonceSize:]
 	return aesgcm.Open(nil, nonce, ciphertext, nil)
+}
+
+func init() {
+	// Register the AES-GCM implementation
+	smartcrypt.RegisterEncryptor(
+		&AESGCMEncryptor{})
+}
+
+func (e *AESGCMEncryptor) SetKey(key []byte) {
+	NewAESGCMEncryptor(key)
+}
+
+func (e *AESGCMEncryptor) GetKey() {
+	return
 }
 
 // Name returns the name of the algorithm.
